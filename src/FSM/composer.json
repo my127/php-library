@@ -1,0 +1,25 @@
+{
+  "name": "my127/fsm",
+  "type": "library",
+  "license": "MIT",
+  "require": {
+    "php": ">=7.2"
+  },
+  "require-dev": {
+    "phpspec/phpspec": "^4.0",
+    "phpunit/phpunit": "^7.0"
+  },
+  "authors": [
+    {
+      "name": "David Cole",
+      "email": "dcole@my127.io"
+    }
+  ],
+  "autoload": {
+    "psr-4": { "my127\\FSM\\": "src/" }
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit && vendor/bin/phpspec run",
+    "cs": "phpcs --standard=PSR1 --ignore=*/vendor/*"
+  }
+}

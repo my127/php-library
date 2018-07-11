@@ -1,0 +1,6 @@
+suites:
+    my127_fsm:
+        namespace: my127\FSM
+        psr4_prefix: my127\FSM
+extensions:
+  LeanPHP\PhpSpec\CodeCoverage\CodeCoverageExtension: ~

@@ -1,0 +1,11 @@
+suites:
+    my127_console:
+        namespace: my127\Console
+        psr4_prefix: my127\Console
+        src_path: src/Console/src
+        spec_path: src/Console
+    my127_fsm:
+        namespace: my127\FSM
+        psr4_prefix: my127\FSM
+        src_path: src/FSM/src
+        spec_path: src/FSM

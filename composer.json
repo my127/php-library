@@ -1,0 +1,37 @@
+{
+    "name": "my127/my127",
+    "type": "library",
+    "description": "my127 PHP Library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name":  "David Cole",
+            "email": "dcole@my127.io"
+        }
+    ],
+    "require": {
+        "php": ">=7.2",
+        "symfony/event-dispatcher": "^4.0"
+
+    },
+    "replace": {
+        "my127/console": "self.version",
+        "my127/fsm":     "self.version"
+    },
+    "require-dev": {
+        "phpspec/phpspec": "^4.0",
+        "phpunit/phpunit": "^7.0",
+        "squizlabs/php_codesniffer": "^2.3"
+    },
+    "autoload": {
+        "psr-4": {
+          "my127\\Console\\": "src/Console/src/",
+          "my127\\FSM\\":     "src/FSM/src/"
+        }
+    },
+    "scripts": {
+        "test":   "vendor/bin/phpunit --testdox && vendor/bin/phpspec run -fpretty -v --ansi",
+        "cs":     "vendor/bin/phpcs  --standard=PSR2 --ignore=\"*/spec/*,*/tests/*\" ./src",
+        "cs-fix": "vendor/bin/phpcbf --standard=PSR2 --ignore=\"*/spec/*,*/tests/*\" ./src"
+    }
+}
