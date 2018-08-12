@@ -30,9 +30,19 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
         $this->processArgs($optionRepository);
     }
 
+    public function command($offset = 0, $length = null)
+    {
+        return implode(' ', array_slice($this->command, $offset, $length));
+    }
+
     public function getCommand()
     {
         return $this->command;
+    }
+
+    public function argument($argument)
+    {
+        return $this->getArgument($argument);
     }
 
     public function getArgument($argument)
@@ -43,6 +53,11 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
 
         $values = $this->arguments[$argument];
         return (count($values) == 1) ? $values[0] : $values;
+    }
+
+    public function option($option)
+    {
+        return $this->getOption($option);
     }
 
     public function getOption($option)
