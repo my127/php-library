@@ -2,6 +2,8 @@
 
 namespace my127\Console\Usage\Parser;
 
+use my127\Console\Usage\Model\BooleanOptionValue;
+use my127\Console\Usage\Model\StringOptionValue;
 use my127\Console\Usage\Model\OptionDefinition;
 
 class OptionDefinitionParser
@@ -161,11 +163,11 @@ class OptionDefinitionParser
 
         buildOptionDefinition:
         {
-        if ($type == OptionDefinition::TYPE_BOOL && $default === null) {
-            $default = false;
-        }
+            $defaultValue = $type == OptionDefinition::TYPE_BOOL && $default === null
+                ? BooleanOptionValue::create(false)
+                : StringOptionValue::create($default);
 
-            return new OptionDefinition($shortName, $longName, $description, $type, $default, $argument);
+            return new OptionDefinition($shortName, $longName, $description, $type, $defaultValue, $argument);
         }
     }
 }

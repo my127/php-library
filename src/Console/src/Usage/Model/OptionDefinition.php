@@ -34,7 +34,7 @@ class OptionDefinition
     private $type;
 
     /**
-     * @var null|string
+     * @var null|OptionValue
      */
     private $default;
 
@@ -44,12 +44,12 @@ class OptionDefinition
     private $argument;
 
     public function __construct(
-        string $shortName = null,
-        string $longName = null,
-        string $description = null,
+        ?string $shortName = null,
+        ?string $longName = null,
+        ?string $description = null,
         string $type = 'bool',
-        string $default = null,
-        string $argument = null
+        ?OptionValue $default = null,
+        ?string $argument = null
     ) {
         $this->shortName    = $shortName;
         $this->longName     = $longName;
@@ -74,7 +74,7 @@ class OptionDefinition
         return implode('|', $names).' (type:'.$this->type.')';
     }
 
-    public function getDefault()
+    public function getDefault(): ?OptionValue
     {
         return $this->default;
     }

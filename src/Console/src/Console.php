@@ -24,7 +24,7 @@ class Console
             new ActionCollection()
         );
 
-        $application = new Application($name, $description, $version, $executor, $dispatcher);
+        $application = new Application($executor, $dispatcher, $name, $description, $version);
         $application->plugin(new ContextualHelpPlugin());
         $application->plugin(new VersionInfoPlugin());
 

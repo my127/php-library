@@ -11,6 +11,7 @@ use my127\Console\Usage\Model\Command;
 use my127\Console\Usage\Model\OptionDefinition;
 use my127\Console\Usage\Model\OptionDefinitionCollection;
 use my127\Console\Usage\Model\Option;
+use my127\Console\Usage\Model\OptionValue;
 
 class Input implements ArrayAccess, Countable, IteratorAggregate
 {
@@ -60,7 +61,7 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
         return $this->getOption($option);
     }
 
-    public function getOption($option)
+    public function getOption($option): ?OptionValue
     {
         if (!isset($this->options[$option])) {
             return null;
@@ -165,8 +166,8 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
     private function processArgs(OptionDefinitionCollection $optionRepository)
     {
         /**
- * @var OptionDefinition $optionDefinition
-*/
+         * @var OptionDefinition $optionDefinition
+         */
         foreach ($optionRepository as $optionDefinition) {
             $this->options[$optionDefinition->getLongName() ?: $optionDefinition->getShortName()] = null;
         }

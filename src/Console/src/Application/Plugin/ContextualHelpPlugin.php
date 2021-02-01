@@ -7,6 +7,7 @@ use my127\Console\Application\Event\BeforeActionEvent;
 use my127\Console\Application\Event\InvalidUsageEvent;
 use my127\Console\Application\Executor;
 use my127\Console\Application\Section\Section;
+use my127\Console\Usage\Model\BooleanOptionValue;
 use my127\Console\Usage\Model\OptionDefinition;
 use my127\Console\Usage\Model\OptionDefinitionCollection;
 use my127\Console\Usage\Parser\OptionDefinitionParser;
@@ -27,7 +28,7 @@ class ContextualHelpPlugin implements Plugin
             ->on(
                 Executor::EVENT_BEFORE_ACTION,
                 function (BeforeActionEvent $e) {
-                    if (($input = $e->getInput())->getOption('help') == true) {
+                    if (($input = $e->getInput())->getOption('help') == BooleanOptionValue::create(true)) {
                         $this->displayHelpPage($this->root->get(implode(' ', $input->getCommand())));
                         $e->preventAction();
                     }

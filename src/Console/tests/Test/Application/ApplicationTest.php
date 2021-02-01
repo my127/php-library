@@ -6,6 +6,7 @@ use my127\Console\Application\Event\BeforeActionEvent;
 use my127\Console\Application\Executor;
 use my127\Console\Console;
 use my127\Console\Usage\Input;
+use my127\Console\Usage\Model\BooleanOptionValue;
 use PHPUnit\Framework\TestCase;
 
 class ApplicationTest extends TestCase
@@ -23,8 +24,8 @@ class ApplicationTest extends TestCase
             ->option('-V, --verbose')
             ->action(
                 function (Input $input) {
-                    $this->assertSame(false, $input->getOption('debug'));
-                    $this->assertSame(false, $input->getOption('verbose'));
+                    $this->assertEquals(BooleanOptionValue::create(false), $input->getOption('debug'));
+                    $this->assertEquals(BooleanOptionValue::create(false), $input->getOption('verbose'));
                 }
             );
 
