@@ -2,7 +2,6 @@
 
 namespace Test\my127\Console\Application;
 
-use my127\Console\Application\Application;
 use my127\Console\Application\Event\BeforeActionEvent;
 use my127\Console\Application\Executor;
 use my127\Console\Console;
@@ -63,6 +62,8 @@ class ApplicationTest extends TestCase
             ->on(Executor::EVENT_INVALID_USAGE, function () use (&$triggered) { $triggered = true; } )
             ->usage('bar')
             ->action(function() { $this->fail('I should not be able to get here.'); });
+
+        $this->expectOutputRegex('/Usage:/');
 
         $application->run([]);
 
