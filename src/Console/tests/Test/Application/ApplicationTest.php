@@ -21,11 +21,12 @@ class ApplicationTest extends TestCase
         $application = Console::application('foo')
             ->option('-d, --debug')
             ->option('-V, --verbose')
-            ->action(function(Input $input)
-            {
-                $this->assertSame(false, $input->getOption('debug'));
-                $this->assertSame(false, $input->getOption('verbose'));
-            });
+            ->action(
+                function (Input $input) {
+                    $this->assertSame(false, $input->getOption('debug'));
+                    $this->assertSame(false, $input->getOption('verbose'));
+                }
+            );
 
         $application->run(['foo']);
     }
@@ -41,10 +42,11 @@ class ApplicationTest extends TestCase
 
         $application
             ->section('bar')
-            ->action(function() use (&$triggered)
-            {
-                $triggered = true;
-            });
+            ->action(
+                function () use (&$triggered) {
+                    $triggered = true;
+                }
+            );
 
         $application->run(['foo', 'bar']);
 
@@ -59,9 +61,17 @@ class ApplicationTest extends TestCase
         $triggered = false;
 
         $application = Console::application('foo')
-            ->on(Executor::EVENT_INVALID_USAGE, function () use (&$triggered) { $triggered = true; } )
+            ->on(
+                Executor::EVENT_INVALID_USAGE, function () use (&$triggered) {
+                    $triggered = true;
+                }
+            )
             ->usage('bar')
-            ->action(function() { $this->fail('I should not be able to get here.'); });
+            ->action(
+                function () {
+                    $this->fail('I should not be able to get here.');
+                }
+            );
 
         $this->expectOutputRegex('/Usage:/');
 
@@ -81,9 +91,16 @@ class ApplicationTest extends TestCase
 
         $application
             ->section('bar')
-            ->action(function() {});
+            ->action(
+                function () {
+                }
+            );
 
-        $application->on(Executor::EVENT_BEFORE_ACTION, function () use (&$triggered) { $triggered = true; });
+        $application->on(
+            Executor::EVENT_BEFORE_ACTION, function () use (&$triggered) {
+                $triggered = true;
+            }
+        );
         $application->run(['foo', 'bar']);
 
         $this->assertTrue($triggered);
@@ -98,9 +115,17 @@ class ApplicationTest extends TestCase
 
         $application = Console::application('foo')
             ->usage('bar')
-            ->action(function() use (&$triggered) { $triggered = true; });
+            ->action(
+                function () use (&$triggered) {
+                    $triggered = true; 
+                }
+            );
 
-        $application->on(Executor::EVENT_BEFORE_ACTION, function(BeforeActionEvent $event) { $event->preventAction(); });
+        $application->on(
+            Executor::EVENT_BEFORE_ACTION, function (BeforeActionEvent $event) {
+                $event->preventAction(); 
+            }
+        );
         $application->run(['foo', 'bar']);
 
         $this->assertFalse($triggered);

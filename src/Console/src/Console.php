@@ -17,7 +17,12 @@ class Console
     public static function application($name, $description = "", $version = '1.0'): Application
     {
         $dispatcher = new EventDispatcher();
-        $executor   = new Executor($dispatcher, new UsageParserBuilder(), new OptionDefinitionParser(), new ActionCollection());
+        $executor   = new Executor(
+            $dispatcher,
+            new UsageParserBuilder(),
+            new OptionDefinitionParser(),
+            new ActionCollection()
+        );
 
         $application = new Application($name, $description, $version, $executor, $dispatcher);
         $application->plugin(new ContextualHelpPlugin());

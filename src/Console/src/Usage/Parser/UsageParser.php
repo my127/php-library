@@ -20,7 +20,7 @@ class UsageParser
     private $optionRepository;
 
     /**
-     * @param Definition $usageDefinition
+     * @param Definition                 $usageDefinition
      * @param OptionDefinitionCollection $optionRepository
      */
     public function __construct(Definition $usageDefinition, OptionDefinitionCollection $optionRepository)

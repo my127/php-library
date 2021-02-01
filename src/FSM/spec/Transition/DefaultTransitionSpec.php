@@ -45,7 +45,9 @@ class DefaultTransitionSpec extends ObjectBehavior
 
     function it_uses_guard_when_specified_to_check_if_transitioning_is_possible(State $to, Stateful $context, Runner $runner)
     {
-        $guard = function($input) { return $input == 'my_token'; };
+        $guard = function ($input) {
+            return $input == 'my_token'; 
+        };
 
         $this->beConstructedWith('Transition A', $to, $guard);
 

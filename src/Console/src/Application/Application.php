@@ -9,26 +9,43 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class Application
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     private $version;
 
-    /** @var Executor */
+    /**
+     * @var Executor
+     */
     private $executor;
 
-    /** @var EventDispatcher */
+    /**
+     * @var EventDispatcher
+     */
     private $dispatcher;
 
-    /** @var Section */
+    /**
+     * @var Section
+     */
     private $root;
 
-    /** @var Plugin[] */
+    /**
+     * @var Plugin[]
+     */
     private $plugins = [];
 
-    /** @var ActionCollection */
+    /**
+     * @var ActionCollection
+     */
     private $registeredActions;
 
-    public function __construct(string $name, string $description = '', string $version = '', Executor $executor, EventDispatcher $dispatcher)
-    {
+    public function __construct(
+        Executor $executor,
+        EventDispatcher $dispatcher,
+        string $name,
+        string $description = '',
+        string $version = ''
+    ) {
         $this->version           = $version;
         $this->executor          = $executor;
         $this->dispatcher        = $dispatcher;

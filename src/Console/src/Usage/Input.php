@@ -20,8 +20,8 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
     private $args      = [];
 
     /**
-     * @param mixed[]                     $args
-     * @param OptionDefinitionCollection  $optionRepository
+     * @param mixed[]                    $args
+     * @param OptionDefinitionCollection $optionRepository
      */
     public function __construct($args, OptionDefinitionCollection $optionRepository)
     {
@@ -123,26 +123,40 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
      */
     public function __toString()
     {
-        return implode("\n", array_map(function ($arg) {
-            return (string) $arg;
-
-        }, $this->args));
+        return implode(
+            "\n",
+            array_map(
+                function ($arg) {
+                    return (string) $arg;
+                },
+                $this->args
+            )
+        );
     }
 
     public function toJSON()
     {
         $data =
         [
-            'argv'      => array_map(function ($arg) {
-                return (string) $arg;
-            }, $this->args),
+            'argv'      => array_map(
+                function ($arg) {
+                    return (string) $arg;
+                },
+                $this->args
+            ),
             'command'   => $this->command,
-            'arguments' => array_map(function ($values) {
-                return count($values) == 1 ? $values[0] : $values;
-            }, $this->arguments),
-            'options'   => array_map(function ($values) {
-                return count($values) == 1 ? $values[0] : $values;
-            }, $this->options)
+            'arguments' => array_map(
+                function ($values) {
+                    return count($values) == 1 ? $values[0] : $values;
+                },
+                $this->arguments
+            ),
+            'options'   => array_map(
+                function ($values) {
+                    return count($values) == 1 ? $values[0] : $values;
+                },
+                $this->options
+            )
         ];
 
         return json_encode($data, JSON_PRETTY_PRINT);
@@ -150,7 +164,9 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
 
     private function processArgs(OptionDefinitionCollection $optionRepository)
     {
-        /** @var OptionDefinition $optionDefinition */
+        /**
+ * @var OptionDefinition $optionDefinition
+*/
         foreach ($optionRepository as $optionDefinition) {
             $this->options[$optionDefinition->getLongName() ?: $optionDefinition->getShortName()] = null;
         }

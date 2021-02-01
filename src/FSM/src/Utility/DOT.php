@@ -73,19 +73,23 @@ class DOT implements StateVisitor
             $attributes['shape'] = 'doublecircle';
         }
 
-        $this->write(sprintf(
-            '%s ['.$this->formatAttributes($attributes).'];',
-            $stateId,
-            $stateId
-        ));
+        $this->write(
+            sprintf(
+                '%s ['.$this->formatAttributes($attributes).'];',
+                $stateId,
+                $stateId
+            )
+        );
 
         foreach ($state->getTransitions() as $transition) {
-            $this->write(sprintf(
-                '%s -> %s [label="%s"];',
-                $stateId,
-                $this->getStateId($transition->getTo()),
-                $this->getTransitionId($transition).'('.(string)$transition.')'
-            ));
+            $this->write(
+                sprintf(
+                    '%s -> %s [label="%s"];',
+                    $stateId,
+                    $this->getStateId($transition->getTo()),
+                    $this->getTransitionId($transition).'('.(string)$transition.')'
+                )
+            );
         }
     }
 

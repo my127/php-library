@@ -37,8 +37,12 @@ class DefinitionTransitionBuilderSpec extends ObjectBehavior
     function it_builds_default_transition_based_on_given_details(State $from)
     {
         $to     = new DefaultState('S2');
-        $guard  = function() { return true; };
-        $action = function() { return 'applied'; };
+        $guard  = function () {
+            return true; 
+        };
+        $action = function () {
+            return 'applied'; 
+        };
         $expect = new DefaultTransition('t1', $to, $guard, $action);
 
         $this

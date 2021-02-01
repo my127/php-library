@@ -6,8 +6,8 @@ use my127\Console\Usage\Model\OptionDefinitionCollection;
 /**
  * Usage
  *
- * @param string $definition
- * @param string $cmd
+ * @param string                     $definition
+ * @param string                     $cmd
  * @param OptionDefinitionCollection $optionRepository
  *
  * @return false|string[]
@@ -17,11 +17,13 @@ function usage($definition, $cmd = null, OptionDefinitionCollection $optionRepos
 {
     $result = Console::usage($definition, $cmd, $optionRepository);
 
-    if (is_bool($result))
+    if (is_bool($result)) {
         return $result;
+    }
 
-    if (count($result) == 0)
+    if (count($result) == 0) {
         return [];
+    }
 
     return explode("\n", (string)$result);
 }

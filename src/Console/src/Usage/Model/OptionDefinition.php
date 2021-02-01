@@ -43,18 +43,14 @@ class OptionDefinition
      */
     private $argument;
 
-    /**
-     * Option Definition
-     *
-     * @param string $shortName
-     * @param string $longName
-     * @param string $description
-     * @param string $type
-     * @param string $default
-     * @param string $argument
-     */
-    public function __construct($shortName = null, $longName = null, $description = null, $type = 'bool', $default = null, $argument = null)
-    {
+    public function __construct(
+        string $shortName = null,
+        string $longName = null,
+        string $description = null,
+        string $type = 'bool',
+        string $default = null,
+        string $argument = null
+    ) {
         $this->shortName    = $shortName;
         $this->longName     = $longName;
         $this->description  = $description;

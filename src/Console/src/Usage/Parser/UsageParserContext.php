@@ -55,7 +55,7 @@ class UsageParserContext implements Stateful
 
     /**
      * @param Transition $transition
-     * @param mixed $data
+     * @param mixed      $data
      */
     public function setData(Transition $transition, $data)
     {

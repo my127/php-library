@@ -81,7 +81,7 @@ class BacktrackingRunner implements Runner
     /**
      * Input
      *
-     * @param mixed $input  An array of symbols to pass into the FSM
+     * @param mixed $input An array of symbols to pass into the FSM
      *
      * @return mixed[]|false
      */
@@ -115,8 +115,6 @@ class BacktrackingRunner implements Runner
 
     /**
      * Backtrack
-     *
-     *
      */
     private function backtrack()
     {

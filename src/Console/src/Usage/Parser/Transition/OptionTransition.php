@@ -28,7 +28,7 @@ class OptionTransition implements Transition
      * Option Transition
      *
      * @param OptionDefinition $optionDefinition
-     * @param State $to
+     * @param State            $to
      */
     public function __construct(OptionDefinition $optionDefinition, $to)
     {

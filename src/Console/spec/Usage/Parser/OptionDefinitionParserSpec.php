@@ -77,13 +77,15 @@ class OptionDefinitionParserSpec extends ObjectBehavior
     function it_returns_definition_of_value_type_with_given_specified_default()
     {
         $this->parse('-e ENV  Environment to which changes apply [default: development]')
-            ->shouldBeLike(new OptionDefinition(
-                'e',
-                null,
-                'Environment to which changes apply [default: development]',
-                OptionDefinition::TYPE_VALUE,
-                'development',
-                'ENV'
-            ));
+            ->shouldBeLike(
+                new OptionDefinition(
+                    'e',
+                    null,
+                    'Environment to which changes apply [default: development]',
+                    OptionDefinition::TYPE_VALUE,
+                    'development',
+                    'ENV'
+                )
+            );
     }
 }

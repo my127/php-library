@@ -20,32 +20,52 @@ class Executor implements SectionVisitor
     public const EVENT_INVALID_USAGE = 'my127.console.application.invalid_usage';
     public const EVENT_BEFORE_ACTION = 'my127.console.application.before_action';
 
-    /** @var EventDispatcher  */
+    /**
+     * @var EventDispatcher
+     */
     private $dispatcher = null;
 
-    /** @var OptionDefinitionParser */
+    /**
+     * @var OptionDefinitionParser
+     */
     private $optionParser = null;
 
-    /** @var UsageParserBuilder  */
+    /**
+     * @var UsageParserBuilder
+     */
     private $usageParserBuilder = null;
 
-    /** @var Section */
+    /**
+     * @var Section
+     */
     private $root = null;
 
-    /** @var string[] */
+    /**
+     * @var string[]
+     */
     private $argv = [];
 
-    /** @var Section */
+    /**
+     * @var Section
+     */
     private $matchedSection = null;
 
-    /** @var Input */
+    /**
+     * @var Input
+     */
     private $matchedInput = null;
 
-    /** @var ActionCollection */
+    /**
+     * @var ActionCollection
+     */
     private $actions;
 
-    public function __construct(EventDispatcher $dispatcher, UsageParserBuilder $usageParserBuilder, OptionDefinitionParser $optionParser, ActionCollection $actions)
-    {
+    public function __construct(
+        EventDispatcher $dispatcher,
+        UsageParserBuilder $usageParserBuilder,
+        OptionDefinitionParser $optionParser,
+        ActionCollection $actions
+    ) {
         $this->dispatcher         = $dispatcher;
         $this->optionParser       = $optionParser;
         $this->usageParserBuilder = $usageParserBuilder;
@@ -93,9 +113,7 @@ class Executor implements SectionVisitor
         }
 
         foreach ($usageDefinitions as $usageDefinition) {
-
             if ($usageDefinition[-1] == '%') {
-
                 $compare = explode(' ', substr($usageDefinition, 0, -2));
                 $against = array_slice($this->argv, 0, count($compare));
 
@@ -116,9 +134,7 @@ class Executor implements SectionVisitor
                 $this->matchedSection = $section;
 
                 return false;
-
             } else {
-
                 $parser = $this->usageParserBuilder->createUsageParser($usageDefinition, $options);
 
                 if (($input = $parser->parse($this->argv)) !== false) {
@@ -145,20 +161,26 @@ class Executor implements SectionVisitor
 
     private function invalidUsage($argv): InvalidUsageEvent
     {
-        $this->dispatcher->dispatch(self::EVENT_INVALID_USAGE, $event = new InvalidUsageEvent(
-            $argv,
-            $this->buildOptionCollection($this->root->getOptions())
-        ));
+        $this->dispatcher->dispatch(
+            self::EVENT_INVALID_USAGE,
+            $event = new InvalidUsageEvent(
+                $argv,
+                $this->buildOptionCollection($this->root->getOptions())
+            )
+        );
 
         return $event;
     }
 
     private function beforeAction(): BeforeActionEvent
     {
-        $this->dispatcher->dispatch(self::EVENT_BEFORE_ACTION, $event = new BeforeActionEvent(
-            $this->matchedInput,
-            $this->matchedSection
-        ));
+        $this->dispatcher->dispatch(
+            self::EVENT_BEFORE_ACTION,
+            $event = new BeforeActionEvent(
+                $this->matchedInput,
+                $this->matchedSection
+            )
+        );
 
         return $event;
     }

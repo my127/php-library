@@ -63,7 +63,7 @@ class UsageParserBuilder
         $this->sequences                  = [];
         $this->sequence                   = [];
         $this->mode                       = self::MODE_REQUIRED;
-        $this->globalDefinitionRepository = (!$definitionRepository) ? new OptionDefinitionCollection() : $definitionRepository;
+        $this->globalDefinitionRepository = $definitionRepository ?? new OptionDefinitionCollection();
         $this->usageDefinitionRepository  = new OptionDefinitionCollection();
         $this->tokens                     = new Scanner($definition);
 
@@ -253,7 +253,11 @@ class UsageParserBuilder
             $passed[] = $token = $this->tokens->pop();
 
             if ($token->getType() != $type) {
-                throw new Exception('Expected Token ['.(new Token($type)).'] but found ['.(new Token($token->getType())).'].');
+                throw new Exception(sprintf(
+                    'Expected Token [%s] but found [%s].',
+                    new Token($type),
+                    new Token($token->getType())
+                ));
             }
         }
 
