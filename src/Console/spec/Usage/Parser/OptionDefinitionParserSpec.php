@@ -2,7 +2,9 @@
 
 namespace spec\my127\Console\Usage\Parser;
 
+use my127\Console\Usage\Model\BooleanOptionValue;
 use my127\Console\Usage\Model\OptionDefinition;
+use my127\Console\Usage\Model\StringOptionValue;
 use PhpSpec\ObjectBehavior;
 use PhpSpec\Wrapper\Subject;
 use Prophecy\Argument;
@@ -52,12 +54,25 @@ class OptionDefinitionParserSpec extends ObjectBehavior
 
     function it_returns_definition_of_bool_type_and_false_default_when_no_argument_or_default_specified()
     {
-        $this->parse('-h')->shouldBeLike(new OptionDefinition('h', null, null, OptionDefinition::TYPE_BOOL, false));
+        $this->parse('-h')->shouldBeLike(new OptionDefinition(
+            'h',
+            null,
+            null,
+            OptionDefinition::TYPE_BOOL,
+            BooleanOptionValue::create(false)
+        ));
     }
 
     function it_returns_definition_of_value_type_when_argument_is_specified()
     {
-        $expect = new OptionDefinition('e', 'environment', 'Environment to which changes apply.', OptionDefinition::TYPE_VALUE, null, 'ENVIRONMENT');
+        $expect = new OptionDefinition(
+            'e',
+            'environment',
+            'Environment to which changes apply.',
+            OptionDefinition::TYPE_VALUE,
+            null,
+            'ENVIRONMENT'
+        );
 
         $this->parse('-e, --environment=<ENVIRONMENT>  Environment to which changes apply.')->shouldBeLike($expect);
         $this->parse('-e=<ENVIRONMENT>, --environment  Environment to which changes apply.')->shouldBeLike($expect);
@@ -83,7 +98,7 @@ class OptionDefinitionParserSpec extends ObjectBehavior
                     null,
                     'Environment to which changes apply [default: development]',
                     OptionDefinition::TYPE_VALUE,
-                    'development',
+                    StringOptionValue::create('development'),
                     'ENV'
                 )
             );

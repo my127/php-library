@@ -34,7 +34,7 @@ class OptionDefinition
     private $type;
 
     /**
-     * @var null|OptionValue
+     * @var OptionValue
      */
     private $default;
 
@@ -47,10 +47,14 @@ class OptionDefinition
         ?string $shortName = null,
         ?string $longName = null,
         ?string $description = null,
-        string $type = 'bool',
+        string $type = self::TYPE_BOOL,
         ?OptionValue $default = null,
         ?string $argument = null
     ) {
+        if (null === $default) {
+            $default = $this->createDefaultOptionValue($type);
+        }
+
         $this->shortName    = $shortName;
         $this->longName     = $longName;
         $this->description  = $description;
@@ -74,7 +78,7 @@ class OptionDefinition
         return implode('|', $names).' (type:'.$this->type.')';
     }
 
-    public function getDefault(): ?OptionValue
+    public function getDefault(): OptionValue
     {
         return $this->default;
     }
@@ -175,5 +179,15 @@ class OptionDefinition
     public function __toString()
     {
         return $this->getLabel();
+    }
+
+    private function createDefaultOptionValue(string $type): OptionValue
+    {
+        switch ($type) {
+            case self::TYPE_BOOL:
+                return BooleanOptionValue::create(false);
+            default:
+                return StringOptionValue::create('');
+        }
     }
 }

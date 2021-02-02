@@ -165,7 +165,7 @@ class OptionDefinitionParser
         {
             $defaultValue = $type == OptionDefinition::TYPE_BOOL && $default === null
                 ? BooleanOptionValue::create(false)
-                : StringOptionValue::create($default);
+                : StringOptionValue::create((string) $default);
 
             return new OptionDefinition($shortName, $longName, $description, $type, $defaultValue, $argument);
         }
