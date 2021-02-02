@@ -5,6 +5,7 @@ namespace my127\Console\Usage;
 use ArrayAccess;
 use ArrayIterator;
 use Countable;
+use InvalidArgumentException;
 use IteratorAggregate;
 use my127\Console\Usage\Model\Argument;
 use my127\Console\Usage\Model\Command;
@@ -61,10 +62,10 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
         return $this->getOption($option);
     }
 
-    public function getOption($option): ?OptionValue
+    public function getOption($option): OptionValue
     {
         if (!isset($this->options[$option])) {
-            return null;
+            throw new InvalidArgumentException(sprintf('The option "%s" does not exist.', $option));
         }
 
         $values = $this->options[$option];

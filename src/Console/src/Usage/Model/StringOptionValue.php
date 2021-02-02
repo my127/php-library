@@ -18,4 +18,9 @@ class StringOptionValue implements OptionValue
     {
         return new self($value);
     }
+
+    public function equals(OptionValue $value): bool
+    {
+        return $value == $this->value;
+    }
 }

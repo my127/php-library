@@ -28,7 +28,7 @@ class ContextualHelpPlugin implements Plugin
             ->on(
                 Executor::EVENT_BEFORE_ACTION,
                 function (BeforeActionEvent $e) {
-                    if (($input = $e->getInput())->getOption('help') == BooleanOptionValue::create(true)) {
+                    if (($input = $e->getInput())->getOption('help')->equals(BooleanOptionValue::create(true))) {
                         $this->displayHelpPage($this->root->get(implode(' ', $input->getCommand())));
                         $e->preventAction();
                     }
