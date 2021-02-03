@@ -6,6 +6,7 @@ class OptionDefinition
 {
     const TYPE_BOOL  = 'bool';
     const TYPE_VALUE = 'value';
+    const TYPES = [self::TYPE_BOOL, self::TYPE_VALUE];
 
     /**
      * Short Name
@@ -44,17 +45,13 @@ class OptionDefinition
     private $argument;
 
     public function __construct(
+        OptionValue $default,
+        string $type = self::TYPE_BOOL,
         ?string $shortName = null,
         ?string $longName = null,
         ?string $description = null,
-        string $type = self::TYPE_BOOL,
-        ?OptionValue $default = null,
         ?string $argument = null
     ) {
-        if (null === $default) {
-            $default = $this->createDefaultOptionValue($type);
-        }
-
         $this->shortName    = $shortName;
         $this->longName     = $longName;
         $this->description  = $description;
@@ -181,13 +178,19 @@ class OptionDefinition
         return $this->getLabel();
     }
 
-    private function createDefaultOptionValue(string $type): OptionValue
+    public function withLongName(string $name): self
     {
-        switch ($type) {
-            case self::TYPE_BOOL:
-                return BooleanOptionValue::create(false);
-            default:
-                return StringOptionValue::create('');
-        }
+        $instance = clone $this;
+        $instance->longName = $name;
+
+        return $instance;
+    }
+
+    public function withShortName(string $name): self
+    {
+        $instance = clone $this;
+        $instance->shortName = $name;
+
+        return $instance;
     }
 }

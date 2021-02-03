@@ -2,8 +2,10 @@
 
 namespace Test\my127\Console\Usage\Parser;
 
+use my127\Console\Usage\Model\BooleanOptionValue;
 use my127\Console\Usage\Model\OptionDefinition;
 use my127\Console\Usage\Model\OptionDefinitionCollection;
+use my127\Console\Usage\Model\StringOptionValue;
 use PHPUnit\Framework\TestCase;
 
 require_once __DIR__.'/../../../resources/usage.php';
@@ -300,8 +302,18 @@ class UsageParserTest extends TestCase
     public function option_definitions_can_all_be_added_at_once()
     {
         $optionRepository = new OptionDefinitionCollection();
-        $optionRepository->add(new OptionDefinition('h', 'help', null, OptionDefinition::TYPE_BOOL));
-        $optionRepository->add(new OptionDefinition('e', 'environment', null, OptionDefinition::TYPE_VALUE));
+        $optionRepository->add(new OptionDefinition(
+            BooleanOptionValue::create(true),
+            OptionDefinition::TYPE_BOOL,
+            'h',
+            'help'
+        ));
+        $optionRepository->add(new OptionDefinition(
+            StringOptionValue::create('test'),
+            OptionDefinition::TYPE_VALUE,
+            'e',
+            'environment'
+        ));
 
         $result = usage('[options]', '-h --environment=development', $optionRepository);
 

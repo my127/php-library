@@ -19,6 +19,16 @@ class ContextualHelpPlugin implements Plugin
      */
     private $root;
 
+    /**
+     * @var OptionDefinitionParser
+     */
+    private $optionDefinitionParser;
+
+    public function __construct(OptionDefinitionParser $optionDefinitionParser)
+    {
+        $this->optionDefinitionParser = $optionDefinitionParser;
+    }
+
     public function setup(Application $application): void
     {
         $this->root = $application->getRootSection();
@@ -162,11 +172,10 @@ class ContextualHelpPlugin implements Plugin
 
     private function getOptionCollection(array $options): OptionDefinitionCollection
     {
-        $parser     = new OptionDefinitionParser();
         $collection = new OptionDefinitionCollection();
 
         foreach ($options as $option) {
-            $collection->add($parser->parse($option));
+            $collection->add($this->optionDefinitionParser->parse($option));
         }
 
         return $collection;

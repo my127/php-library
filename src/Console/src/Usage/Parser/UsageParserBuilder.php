@@ -3,6 +3,7 @@
 namespace my127\Console\Usage\Parser;
 
 use Exception;
+use my127\Console\Factory\OptionValueFactory;
 use my127\Console\Usage\Model\OptionDefinition;
 use my127\Console\Usage\Model\OptionDefinitionCollection;
 use my127\Console\Usage\Parser\Transition\ArgumentTransition;
@@ -48,6 +49,16 @@ class UsageParserBuilder
     private $sequence = [];
 
     private $mode = self::MODE_REQUIRED;
+
+    /**
+     * @var OptionValueFactory
+     */
+    private $optionValueFactory;
+
+    public function __construct(OptionValueFactory $optionValueFactory)
+    {
+        $this->optionValueFactory = $optionValueFactory;
+    }
 
     /**
      * Create Command Parser
@@ -207,9 +218,17 @@ class UsageParserBuilder
         $value      = $this->is(Token::T_EQUALS);
 
         if (!$definition) {
-            $definition = ($token->getType() == Token::T_LONG_OPTION) ?
-                new OptionDefinition(null, $token->getValue(), null, ($value ? 'value' : 'bool')):
-                new OptionDefinition($token->getValue(), null, null, ($value ? 'value' : 'bool'));
+            $type = $value ? OptionDefinition::TYPE_VALUE : OptionDefinition::TYPE_BOOL;
+            $defaultValue = $this->optionValueFactory->createFromType($type);
+            $definition = new OptionDefinition($defaultValue, $type);
+
+            if ($token->getType() === Token::T_LONG_OPTION) {
+                $definition = $definition->withLongName($token->getValue());
+            }
+
+            if ($token->getType() === Token::T_SHORT_OPTION) {
+                $definition = $definition->withShortName($token->getValue());
+            }
         }
 
         if ($value) {
@@ -225,7 +244,11 @@ class UsageParserBuilder
 
         for ($i = 0; $i < strlen($tokens); ++$i) {
             if (!($definition = $this->globalDefinitionRepository->find($tokens[$i]))) {
-                $definition = new OptionDefinition($tokens[$i], null, null, 'bool');
+                $definition = new OptionDefinition(
+                    $this->optionValueFactory->createFromType(OptionDefinition::TYPE_BOOL),
+                    OptionDefinition::TYPE_BOOL,
+                    $tokens[$i]
+                );
             }
 
             $this->addOption($definition);

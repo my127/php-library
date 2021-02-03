@@ -2,12 +2,21 @@
 
 namespace my127\Console\Usage\Parser;
 
-use my127\Console\Usage\Model\BooleanOptionValue;
-use my127\Console\Usage\Model\StringOptionValue;
+use my127\Console\Factory\OptionValueFactory;
 use my127\Console\Usage\Model\OptionDefinition;
 
 class OptionDefinitionParser
 {
+    /**
+     * @var OptionValueFactory
+     */
+    private $optionValueFactory;
+
+    public function __construct(OptionValueFactory $optionValueFactory)
+    {
+        $this->optionValueFactory = $optionValueFactory;
+    }
+
     public function parse($option): OptionDefinition
     {
         $shortName   = null;
@@ -163,11 +172,11 @@ class OptionDefinitionParser
 
         buildOptionDefinition:
         {
-            $defaultValue = $type == OptionDefinition::TYPE_BOOL && $default === null
-                ? BooleanOptionValue::create(false)
-                : StringOptionValue::create((string) $default);
+            $defaultValue = null === $default
+                ? $this->optionValueFactory->createFromType($type)
+                : $this->optionValueFactory->createFromTypeAndValue($type, $default);
 
-            return new OptionDefinition($shortName, $longName, $description, $type, $defaultValue, $argument);
+            return new OptionDefinition($defaultValue, $type, $shortName, $longName, $description, $argument);
         }
     }
 }
