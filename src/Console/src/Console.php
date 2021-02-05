@@ -24,7 +24,8 @@ class Console
             $dispatcher,
             new UsageParserBuilder($optionValueFactory),
             $optionDefinitionParser,
-            new ActionCollection()
+            new ActionCollection(),
+            $optionValueFactory
         );
 
         $application = new Application($executor, $dispatcher, $name, $description, $version);

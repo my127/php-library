@@ -7,6 +7,7 @@ use ArrayIterator;
 use Countable;
 use InvalidArgumentException;
 use IteratorAggregate;
+use my127\Console\Factory\OptionValueFactory;
 use my127\Console\Usage\Model\Argument;
 use my127\Console\Usage\Model\Command;
 use my127\Console\Usage\Model\OptionDefinition;
@@ -22,12 +23,22 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
     private $args      = [];
 
     /**
-     * @param mixed[]                    $args
-     * @param OptionDefinitionCollection $optionRepository
+     * @var OptionValueFactory
      */
-    public function __construct($args, OptionDefinitionCollection $optionRepository)
-    {
+    private $optionValueFactory;
+
+    /**
+     * @param mixed[] $args
+     * @param OptionDefinitionCollection $optionRepository
+     * @param OptionValueFactory $optionValueFactory
+     */
+    public function __construct(
+        $args,
+        OptionDefinitionCollection $optionRepository,
+        OptionValueFactory $optionValueFactory
+    ) {
         $this->args = $args;
+        $this->optionValueFactory = $optionValueFactory;
 
         $this->processArgs($optionRepository);
     }
@@ -184,7 +195,7 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
                     break;
 
                 case ($arg instanceof Option):
-                    $this->options[$this->getOptionName($arg)][] = $arg->getValue();
+                    $this->options[$this->getOptionName($arg)][] = $this->createOptionValue($arg);
                     break;
             }
         }
@@ -201,5 +212,14 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
         $definition = $option->getDefinition();
 
         return $definition->getLongName()?:$definition->getShortName();
+    }
+
+    private function createOptionValue(Option $arg): OptionValue
+    {
+        if (null === $value = $arg->getValue()) {
+            return $arg->getDefinition()->getDefault();
+        }
+
+        return $this->optionValueFactory->createFromTypeAndValue($arg->getDefinition()->getType(), $value);
     }
 }

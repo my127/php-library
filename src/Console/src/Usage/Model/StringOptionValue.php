@@ -23,4 +23,9 @@ class StringOptionValue implements OptionValue
     {
         return $value == $this->value;
     }
+
+    public function value(): string
+    {
+        return $this->value;
+    }
 }

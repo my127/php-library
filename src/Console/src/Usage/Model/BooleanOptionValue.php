@@ -26,4 +26,9 @@ class BooleanOptionValue implements OptionValue
     {
         return $value == $this->value;
     }
+
+    public function value(): bool
+    {
+        return $this->value;
+    }
 }

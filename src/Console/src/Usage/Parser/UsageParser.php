@@ -2,6 +2,7 @@
 
 namespace my127\Console\Usage\Parser;
 
+use my127\Console\Factory\OptionValueFactory;
 use my127\Console\Usage\Input;
 use my127\Console\Usage\Model\OptionDefinitionCollection;
 use my127\FSM\Runner\BacktrackingRunner;
@@ -20,13 +21,18 @@ class UsageParser
     private $optionRepository;
 
     /**
-     * @param Definition                 $usageDefinition
-     * @param OptionDefinitionCollection $optionRepository
+     * @var OptionValueFactory
      */
-    public function __construct(Definition $usageDefinition, OptionDefinitionCollection $optionRepository)
-    {
+    private $optionValueFactory;
+
+    public function __construct(
+        Definition $usageDefinition,
+        OptionDefinitionCollection $optionRepository,
+        OptionValueFactory $optionValueFactory
+    ) {
         $this->usageDefinition  = $usageDefinition;
         $this->optionRepository = $optionRepository;
+        $this->optionValueFactory = $optionValueFactory;
     }
 
     public function getDefinition()
@@ -55,7 +61,7 @@ class UsageParser
 
         $result = $fsm->input($symbols);
 
-        return $result === false ? false : new Input($result, $this->optionRepository);
+        return $result === false ? false : new Input($result, $this->optionRepository, $this->optionValueFactory);
     }
 
     private function getInputSequence($args = null)

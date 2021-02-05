@@ -78,7 +78,7 @@ class UsageParserBuilder
         $this->usageDefinitionRepository  = new OptionDefinitionCollection();
         $this->tokens                     = new Scanner($definition);
 
-        return new UsageParser($this->parse(), $this->usageDefinitionRepository);
+        return new UsageParser($this->parse(), $this->usageDefinitionRepository, $this->optionValueFactory);
     }
 
     private function parse()
