@@ -131,4 +131,26 @@ class ApplicationTest extends TestCase
 
         $this->assertFalse($triggered);
     }
+
+    /**
+     * @test
+     */
+    public function actions_can_take_argument()
+    {
+        $actionResult = '';
+        $application = Console::application('foo');
+        $application
+            ->register(function (Input $input) use (&$actionResult) {
+                $actionResult = sprintf(
+                    'Action "%s" executed with argument "%s".',
+                    implode(' ', $input->getCommand()),
+                    $input->getArgument('%')
+                );
+            }, 'test')
+            ->action('test')->usage('test %');
+
+        $application->run(['foo', 'test', '1234']);
+
+        $this->assertEquals('Action "foo test" executed with argument "1234".', $actionResult);
+    }
 }

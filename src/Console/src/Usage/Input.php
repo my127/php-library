@@ -8,6 +8,7 @@ use Countable;
 use InvalidArgumentException;
 use IteratorAggregate;
 use my127\Console\Factory\OptionValueFactory;
+use my127\Console\Usage\Exception\NoSuchOptionException;
 use my127\Console\Usage\Model\Argument;
 use my127\Console\Usage\Model\Command;
 use my127\Console\Usage\Model\OptionDefinition;
@@ -76,7 +77,7 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
     public function getOption($option): OptionValue
     {
         if (!isset($this->options[$option])) {
-            throw new InvalidArgumentException(sprintf('The option "%s" does not exist.', $option));
+            throw NoSuchOptionException::createFromOptionName($option);
         }
 
         $values = $this->options[$option];
