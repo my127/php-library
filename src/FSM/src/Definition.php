@@ -59,7 +59,7 @@ class Definition implements StateVisitorClient
      * Add State
      *
      * @param State|string $state
-     * @param string $type
+     * @param string       $type
      *
      * @throws Exception
      */
@@ -107,11 +107,11 @@ class Definition implements StateVisitorClient
      * addTransition(Transition, From)
      * addTransition(Label, From, To [,Guard [,Action]])
      *
-     * @param string|Transition  $transition
-     * @param string|State       $from
-     * @param string|State       $to
-     * @param callable           $guard
-     * @param string|callable    $action
+     * @param string|Transition $transition
+     * @param string|State      $from
+     * @param string|State      $to
+     * @param callable          $guard
+     * @param string|callable   $action
      *
      * @return void
      */
@@ -122,7 +122,12 @@ class Definition implements StateVisitorClient
         }
 
         if (!($transition instanceof Transition)) {
-            $transition = new DefaultTransition($transition, ($to instanceof State)?$to:$this->getState($to), $guard, $action);
+            $transition = new DefaultTransition(
+                $transition,
+                ($to instanceof State) ? $to : $this->getState($to),
+                $guard,
+                $action
+            );
         }
 
         $from->addTransition($transition);

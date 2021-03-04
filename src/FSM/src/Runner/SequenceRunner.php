@@ -40,8 +40,7 @@ class SequenceRunner implements Runner
 
         $context->setCurrentState($initialState);
 
-        $this->originalContext = clone $this->context = $context;
-
+        $this->originalContext = clone ($this->context = $context);
     }
 
     /**
@@ -130,11 +129,13 @@ class SequenceRunner implements Runner
         $state = $this->context->getCurrentState();
 
         if ($transition === null && !($transition = $this->can($input))) {
-            throw new StateException(sprintf(
-                'No transition from %s accepted %s',
-                (string)$state,
-                $input
-            ));
+            throw new StateException(
+                sprintf(
+                    'No transition from %s accepted %s',
+                    (string)$state,
+                    $input
+                )
+            );
         }
 
         return $transition->apply($input, $this->context, $this);
@@ -151,8 +152,8 @@ class SequenceRunner implements Runner
      * can(Input)
      * can(Input, Transition)
      *
-     * @param mixed      $input        Input against which transition(s) will be tested
-     * @param Transition $transition   If specified only this transition will be tested
+     * @param mixed      $input      Input against which transition(s) will be tested
+     * @param Transition $transition If specified only this transition will be tested
      *
      * @return Transition|false
      * @throws Exception

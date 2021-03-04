@@ -7,14 +7,28 @@ use my127\Console\Application\Event\BeforeActionEvent;
 use my127\Console\Application\Event\InvalidUsageEvent;
 use my127\Console\Application\Executor;
 use my127\Console\Application\Section\Section;
+use my127\Console\Usage\Exception\NoSuchOptionException;
+use my127\Console\Usage\Model\BooleanOptionValue;
 use my127\Console\Usage\Model\OptionDefinition;
 use my127\Console\Usage\Model\OptionDefinitionCollection;
 use my127\Console\Usage\Parser\OptionDefinitionParser;
 
 class ContextualHelpPlugin implements Plugin
 {
-    /** @var Section */
+    /**
+     * @var Section
+     */
     private $root;
+
+    /**
+     * @var OptionDefinitionParser
+     */
+    private $optionDefinitionParser;
+
+    public function __construct(OptionDefinitionParser $optionDefinitionParser)
+    {
+        $this->optionDefinitionParser = $optionDefinitionParser;
+    }
 
     public function setup(Application $application): void
     {
@@ -22,27 +36,35 @@ class ContextualHelpPlugin implements Plugin
 
         $application
             ->option('-h, --help    Show help message')
-            ->on(Executor::EVENT_BEFORE_ACTION, function (BeforeActionEvent $e)
-            {
-                if (($input = $e->getInput())->getOption('help') == true) {
-                    $this->displayHelpPage($this->root->get(implode(' ', $input->getCommand())));
-                    $e->preventAction();
+            ->on(
+                Executor::EVENT_BEFORE_ACTION,
+                function (BeforeActionEvent $e) {
+                    try {
+                        if (($input = $e->getInput())->getOption('help')->equals(BooleanOptionValue::create(true))) {
+                            $this->displayHelpPage($this->root->get(implode(' ', $input->getCommand())));
+                            $e->preventAction();
+                        }
+                    } catch (NoSuchOptionException $e) {
+                        // Ignore actions that does not provide help.
+                    }
                 }
-            })
-            ->on(Executor::EVENT_INVALID_USAGE, function (InvalidUsageEvent $e)
-            {
-                $argv  = $e->getInputSequence();
-                $parts = [];
+            )
+            ->on(
+                Executor::EVENT_INVALID_USAGE,
+                function (InvalidUsageEvent $e) {
+                    $argv  = $e->getInputSequence();
+                    $parts = [];
 
-                while ($positional = $argv->pop()) {
-                    $parts[] = $positional;
+                    while ($positional = $argv->pop()) {
+                        $parts[] = $positional;
+                    }
+
+                    $name    = implode(' ', $parts);
+                    $section = $this->root->contains($name)?$this->root->get($name):$this->root;
+
+                    $this->displayHelpPage($section);
                 }
-
-                $name    = implode(' ', $parts);
-                $section = $this->root->contains($name)?$this->root->get($name):$this->root;
-
-                $this->displayHelpPage($section);
-            });
+            );
     }
 
     private function displayHelpPage(Section $section): void
@@ -52,15 +74,12 @@ class ContextualHelpPlugin implements Plugin
 
         // Usage
         if (count($section->getUsageDefinitions()) > 0) {
-
             echo "\033[33mUsage:\033[0m\n";
             foreach ($section->getUsageDefinitions() as $usageDefinition) {
                 echo "  {$usageDefinition}\n";
             }
             echo "\n\n";
-
-        } else if ($section->getAction() !== null) {
-
+        } elseif ($section->getAction() !== null) {
             echo "\033[33mUsage:\033[0m\n";
             echo "  {$section->getName()} [options]";
             echo "\n\n";
@@ -89,9 +108,10 @@ class ContextualHelpPlugin implements Plugin
         $lines   = [];
         $padding = 0;
 
-        /** @var Section $child */
+        /**
+         * @var Section $child
+         */
         foreach ($children as $child) {
-
             $name = $child->getName();
             $line = [
                 'name'        => substr($name, strrpos($name, ' ')),
@@ -119,9 +139,10 @@ class ContextualHelpPlugin implements Plugin
         $padding = 0;
         $lines   = [];
 
-        /** @var OptionDefinition $option */
+        /**
+         * @var OptionDefinition $option
+         */
         foreach ($this->getOptionCollection($options) as $option) {
-
             $description = $option->getDescription();
 
             $definition  = '  ';
@@ -156,11 +177,10 @@ class ContextualHelpPlugin implements Plugin
 
     private function getOptionCollection(array $options): OptionDefinitionCollection
     {
-        $parser     = new OptionDefinitionParser();
         $collection = new OptionDefinitionCollection();
 
         foreach ($options as $option) {
-            $collection->add($parser->parse($option));
+            $collection->add($this->optionDefinitionParser->parse($option));
         }
 
         return $collection;

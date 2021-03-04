@@ -6,6 +6,7 @@ class OptionDefinition
 {
     const TYPE_BOOL  = 'bool';
     const TYPE_VALUE = 'value';
+    const TYPES = [self::TYPE_BOOL, self::TYPE_VALUE];
 
     /**
      * Short Name
@@ -34,7 +35,7 @@ class OptionDefinition
     private $type;
 
     /**
-     * @var null|string
+     * @var OptionValue
      */
     private $default;
 
@@ -43,18 +44,14 @@ class OptionDefinition
      */
     private $argument;
 
-    /**
-     * Option Definition
-     *
-     * @param string $shortName
-     * @param string $longName
-     * @param string $description
-     * @param string $type
-     * @param string $default
-     * @param string $argument
-     */
-    public function __construct($shortName = null, $longName = null, $description = null, $type = 'bool', $default = null, $argument = null)
-    {
+    public function __construct(
+        OptionValue $default,
+        string $type = self::TYPE_BOOL,
+        ?string $shortName = null,
+        ?string $longName = null,
+        ?string $description = null,
+        ?string $argument = null
+    ) {
         $this->shortName    = $shortName;
         $this->longName     = $longName;
         $this->description  = $description;
@@ -78,7 +75,7 @@ class OptionDefinition
         return implode('|', $names).' (type:'.$this->type.')';
     }
 
-    public function getDefault()
+    public function getDefault(): OptionValue
     {
         return $this->default;
     }
@@ -179,5 +176,21 @@ class OptionDefinition
     public function __toString()
     {
         return $this->getLabel();
+    }
+
+    public function withLongName(string $name): self
+    {
+        $instance = clone $this;
+        $instance->longName = $name;
+
+        return $instance;
+    }
+
+    public function withShortName(string $name): self
+    {
+        $instance = clone $this;
+        $instance->shortName = $name;
+
+        return $instance;
     }
 }

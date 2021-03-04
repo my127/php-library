@@ -15,7 +15,7 @@ class SequenceRunnerTest extends TestCase
      */
     private $fsm;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $s1 = new DefaultState('S1', State::TYPE_INITIAL);
         $s2 = new DefaultState('S2');

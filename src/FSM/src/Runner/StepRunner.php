@@ -25,8 +25,8 @@ class StepRunner implements Runner
      * A basic machine runner where each call to input correlates to a single
      * transition in the machine.
      *
-     * @param State     $initialState
-     * @param Stateful  $context
+     * @param State    $initialState
+     * @param Stateful $context
      */
     public function __construct(State $initialState, Stateful $context = null)
     {
@@ -83,11 +83,13 @@ class StepRunner implements Runner
         $state = $this->context->getCurrentState();
 
         if ($transition === null && !($transition = $this->can($input))) {
-            throw new StateException(sprintf(
-                'No transition from %s accepted %s',
-                (string)$state,
-                $input
-            ));
+            throw new StateException(
+                sprintf(
+                    'No transition from %s accepted %s',
+                    (string)$state,
+                    $input
+                )
+            );
         }
 
         return $transition->apply($input, $this->context, $this);
@@ -104,8 +106,8 @@ class StepRunner implements Runner
      * can(Input)
      * can(Input, Transition)
      *
-     * @param mixed      $input        Input against which transition(s) will be tested
-     * @param Transition $transition   If specified only this transition will be tested
+     * @param mixed      $input      Input against which transition(s) will be tested
+     * @param Transition $transition If specified only this transition will be tested
      *
      * @return Transition|false
      * @throws Exception

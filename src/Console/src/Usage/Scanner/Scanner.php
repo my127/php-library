@@ -143,7 +143,9 @@ class Scanner
 
                             $optionName = '';
 
-                            while (($this->i < $this->length) && (($c = $this->isAlphanumeric()) || ($c = $this->is('-')) || ($c = $this->is('_')))) {
+                            while (($this->i < $this->length)
+                                && (($c = $this->isAlphanumeric()) || ($c = $this->is('-')) || ($c = $this->is('_')))
+                            ) {
                                 $optionName .= $c;
                             }
 
@@ -169,8 +171,8 @@ class Scanner
                             }
 
                             $token = (strlen($sequence) == 1) ?
-                                new Token(Token::T_SHORT_OPTION, $sequence) :
-                                new Token(Token::T_OPTION_SEQUENCE, $sequence);
+                            new Token(Token::T_SHORT_OPTION, $sequence) :
+                            new Token(Token::T_OPTION_SEQUENCE, $sequence);
 
                             --$this->i;
 

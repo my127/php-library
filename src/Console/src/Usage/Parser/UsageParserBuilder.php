@@ -3,6 +3,7 @@
 namespace my127\Console\Usage\Parser;
 
 use Exception;
+use my127\Console\Factory\OptionValueFactory;
 use my127\Console\Usage\Model\OptionDefinition;
 use my127\Console\Usage\Model\OptionDefinitionCollection;
 use my127\Console\Usage\Parser\Transition\ArgumentTransition;
@@ -50,6 +51,16 @@ class UsageParserBuilder
     private $mode = self::MODE_REQUIRED;
 
     /**
+     * @var OptionValueFactory
+     */
+    private $optionValueFactory;
+
+    public function __construct(OptionValueFactory $optionValueFactory)
+    {
+        $this->optionValueFactory = $optionValueFactory;
+    }
+
+    /**
      * Create Command Parser
      *
      * @param string                     $definition
@@ -63,11 +74,11 @@ class UsageParserBuilder
         $this->sequences                  = [];
         $this->sequence                   = [];
         $this->mode                       = self::MODE_REQUIRED;
-        $this->globalDefinitionRepository = (!$definitionRepository) ? new OptionDefinitionCollection() : $definitionRepository;
+        $this->globalDefinitionRepository = $definitionRepository ?? new OptionDefinitionCollection();
         $this->usageDefinitionRepository  = new OptionDefinitionCollection();
         $this->tokens                     = new Scanner($definition);
 
-        return new UsageParser($this->parse(), $this->usageDefinitionRepository);
+        return new UsageParser($this->parse(), $this->usageDefinitionRepository, $this->optionValueFactory);
     }
 
     private function parse()
@@ -207,9 +218,17 @@ class UsageParserBuilder
         $value      = $this->is(Token::T_EQUALS);
 
         if (!$definition) {
-            $definition = ($token->getType() == Token::T_LONG_OPTION) ?
-                new OptionDefinition(null, $token->getValue(), null, ($value ? 'value' : 'bool')):
-                new OptionDefinition($token->getValue(), null, null, ($value ? 'value' : 'bool'));
+            $type = $value ? OptionDefinition::TYPE_VALUE : OptionDefinition::TYPE_BOOL;
+            $defaultValue = $this->optionValueFactory->createFromType($type);
+            $definition = new OptionDefinition($defaultValue, $type);
+
+            if ($token->getType() === Token::T_LONG_OPTION) {
+                $definition = $definition->withLongName($token->getValue());
+            }
+
+            if ($token->getType() === Token::T_SHORT_OPTION) {
+                $definition = $definition->withShortName($token->getValue());
+            }
         }
 
         if ($value) {
@@ -225,7 +244,11 @@ class UsageParserBuilder
 
         for ($i = 0; $i < strlen($tokens); ++$i) {
             if (!($definition = $this->globalDefinitionRepository->find($tokens[$i]))) {
-                $definition = new OptionDefinition($tokens[$i], null, null, 'bool');
+                $definition = new OptionDefinition(
+                    $this->optionValueFactory->createFromType(OptionDefinition::TYPE_BOOL),
+                    OptionDefinition::TYPE_BOOL,
+                    $tokens[$i]
+                );
             }
 
             $this->addOption($definition);
@@ -253,7 +276,11 @@ class UsageParserBuilder
             $passed[] = $token = $this->tokens->pop();
 
             if ($token->getType() != $type) {
-                throw new Exception('Expected Token ['.(new Token($type)).'] but found ['.(new Token($token->getType())).'].');
+                throw new Exception(sprintf(
+                    'Expected Token [%s] but found [%s].',
+                    new Token($type),
+                    new Token($token->getType())
+                ));
             }
         }
 

@@ -81,8 +81,8 @@ class DefinitionTransitionBuilder
     /**
      * To
      *
-     * @param string|State  $state
-     * @param string        $type
+     * @param string|State $state
+     * @param string       $type
      *
      * @return $this
      */
@@ -100,8 +100,8 @@ class DefinitionTransitionBuilder
     /**
      * When
      *
-     * @param string    $label
-     * @param callable  $guard
+     * @param string   $label
+     * @param callable $guard
      *
      * @return $this
      */

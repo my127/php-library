@@ -62,8 +62,8 @@ class Token
     /**
      * Token
      *
-     * @param int     $type   One of the predefined token constants
-     * @param string  $value  Optional value associated with the token
+     * @param int    $type  One of the predefined token constants
+     * @param string $value Optional value associated with the token
      */
     public function __construct($type, $value = null)
     {

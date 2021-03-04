@@ -62,15 +62,19 @@ class DefinitionSpec extends ObjectBehavior
 
         $expect = new DefaultTransition('t1', $s2);
 
-        $s1->addTransition(Argument::that(function($actual) use($expect) {
-            return $actual == $expect;
-        }))->shouldHaveBeenCalled();
+        $s1->addTransition(
+            Argument::that(
+                function ($actual) use ($expect) {
+                    return $actual == $expect;
+                }
+            )
+        )->shouldHaveBeenCalled();
     }
 
     function it_can_accept_state_visitor(State $s1, StateVisitor $stateVisitor)
     {
         $s1->__toString()->willReturn('S1');
-        $s1->accept(Argument::any(), Argument::any())->willReturn(null);
+        $s1->accept(Argument::cetera())->willReturn(null);
         $this->addState($s1);
 
         $this->accept($stateVisitor);

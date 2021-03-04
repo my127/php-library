@@ -2,8 +2,10 @@
 
 namespace Test\my127\Console\Usage\Parser;
 
+use my127\Console\Usage\Model\BooleanOptionValue;
 use my127\Console\Usage\Model\OptionDefinition;
 use my127\Console\Usage\Model\OptionDefinitionCollection;
+use my127\Console\Usage\Model\StringOptionValue;
 use PHPUnit\Framework\TestCase;
 
 require_once __DIR__.'/../../../resources/usage.php';
@@ -17,7 +19,7 @@ class UsageParserTest extends TestCase
     {
         $result = usage('<environment>', 'development');
 
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertTrue(count($result) == 1);
     }
 
@@ -28,7 +30,7 @@ class UsageParserTest extends TestCase
     {
         $result = usage('<environment>', 'development');
 
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertTrue(count($result) == 1);
         $this->assertEquals("argument('environment', 'development')", $result[0]);
     }
@@ -40,7 +42,7 @@ class UsageParserTest extends TestCase
     {
         $result = usage('<environment> <task>', 'development deploy');
 
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertTrue(count($result) == 2);
         $this->assertEquals("argument('environment', 'development')", $result[0]);
         $this->assertEquals("argument('task', 'deploy')", $result[1]);
@@ -53,7 +55,7 @@ class UsageParserTest extends TestCase
     {
         $result = usage('<environment>', 'development');
 
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertTrue(count($result) == 1);
     }
 
@@ -64,7 +66,7 @@ class UsageParserTest extends TestCase
     {
         $result = usage('<environment>', '-d');
 
-        $this->assertInternalType('bool', $result);
+        $this->assertIsBool($result);
         $this->assertFalse($result);
     }
 
@@ -84,7 +86,7 @@ class UsageParserTest extends TestCase
     {
         $result = usage('[<environment>]', '');
 
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertTrue(count($result) == 0);
     }
 
@@ -95,7 +97,7 @@ class UsageParserTest extends TestCase
     {
         $result = usage('command', 'command');
 
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertTrue(count($result) == 1);
         $this->assertEquals("command('command')", $result[0]);
     }
@@ -107,7 +109,7 @@ class UsageParserTest extends TestCase
     {
         $result = usage('command', '');
 
-        $this->assertInternalType('bool', $result);
+        $this->assertIsBool($result);
         $this->assertEquals(false, $result);
     }
 
@@ -118,7 +120,7 @@ class UsageParserTest extends TestCase
     {
         $result = usage('foo bar', 'foo bar');
 
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertTrue(count($result) == 2);
         $this->assertEquals("command('foo')", $result[0]);
         $this->assertEquals("command('bar')", $result[1]);
@@ -131,7 +133,7 @@ class UsageParserTest extends TestCase
     {
         $result = usage('foo bar', 'bar foo');
 
-        $this->assertInternalType('bool', $result);
+        $this->assertIsBool($result);
         $this->assertFalse($result);
     }
 
@@ -150,7 +152,7 @@ class UsageParserTest extends TestCase
     public function commands_can_be_made_optional()
     {
         $result = usage('[foo]', '');
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertTrue(count($result) == 0);
     }
 
@@ -160,7 +162,7 @@ class UsageParserTest extends TestCase
     public function a_single_dash_when_not_part_of_an_option_is_treated_as_command()
     {
         $result = usage('-', '-');
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertEquals(1, count($result));
         $this->assertEquals("command('-')", $result[0]);
     }
@@ -172,7 +174,7 @@ class UsageParserTest extends TestCase
     {
         $result = usage('-h', '-h');
 
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertTrue(count($result) == 1);
         $this->assertEquals("option('h', 'true')", $result[0]);
     }
@@ -184,7 +186,7 @@ class UsageParserTest extends TestCase
     {
         $result = usage('program -a -b -c command', 'program -a command -b -c');
 
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
 
         $this->assertEquals("option('a', 'true')", $result[1]);
         $this->assertEquals("option('b', 'true')", $result[2]);
@@ -198,7 +200,7 @@ class UsageParserTest extends TestCase
     {
         $result = usage('-abc', '-b -c -a');
 
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertEquals(3, count($result));
 
         $this->assertEquals("option('a', 'true')", $result[0]);
@@ -213,7 +215,7 @@ class UsageParserTest extends TestCase
     {
         $result = usage('-a -b -c', '-bca');
 
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertEquals(3, count($result));
 
         $this->assertEquals("option('a', 'true')", $result[0]);
@@ -228,7 +230,7 @@ class UsageParserTest extends TestCase
     {
         $result = usage('-abc', '-bca');
 
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertEquals(3, count($result));
 
         $this->assertEquals("option('a', 'true')", $result[0]);
@@ -243,7 +245,7 @@ class UsageParserTest extends TestCase
     {
         $result = usage('--environment=<env>', '--environment development');
 
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertEquals(1, count($result));
         $this->assertEquals("option('environment', 'development')", $result[0]);
     }
@@ -255,7 +257,7 @@ class UsageParserTest extends TestCase
     {
         $result = usage('--environment=<env>', '--environment=development');
 
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertEquals(1, count($result));
         $this->assertEquals("option('environment', 'development')", $result[0]);
     }
@@ -267,7 +269,7 @@ class UsageParserTest extends TestCase
     {
         $result = usage('-e=<env>', '-eDevelopment');
 
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertEquals(1, count($result));
         $this->assertEquals("option('e', 'Development')", $result[0]);
     }
@@ -279,7 +281,7 @@ class UsageParserTest extends TestCase
     {
         $result = usage('-e=<env>', '');
 
-        $this->assertInternalType('bool', $result);
+        $this->assertIsBool($result);
         $this->assertFalse($result);
     }
 
@@ -290,7 +292,7 @@ class UsageParserTest extends TestCase
     {
         $result = usage('[-e=<env>]', '');
 
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertEquals(0, count($result));
     }
 
@@ -300,12 +302,22 @@ class UsageParserTest extends TestCase
     public function option_definitions_can_all_be_added_at_once()
     {
         $optionRepository = new OptionDefinitionCollection();
-        $optionRepository->add(new OptionDefinition('h', 'help', null, OptionDefinition::TYPE_BOOL));
-        $optionRepository->add(new OptionDefinition('e', 'environment', null, OptionDefinition::TYPE_VALUE));
+        $optionRepository->add(new OptionDefinition(
+            BooleanOptionValue::create(true),
+            OptionDefinition::TYPE_BOOL,
+            'h',
+            'help'
+        ));
+        $optionRepository->add(new OptionDefinition(
+            StringOptionValue::create('test'),
+            OptionDefinition::TYPE_VALUE,
+            'e',
+            'environment'
+        ));
 
         $result = usage('[options]', '-h --environment=development', $optionRepository);
 
-        $this->assertInternalType('array', $result);
+        $this->assertIsArray($result);
         $this->assertEquals(2, count($result));
         $this->assertEquals("option('h', 'true')", $result[0]);
         $this->assertEquals("option('environment', 'development')", $result[1]);

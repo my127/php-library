@@ -5,12 +5,16 @@ namespace my127\Console\Usage;
 use ArrayAccess;
 use ArrayIterator;
 use Countable;
+use InvalidArgumentException;
 use IteratorAggregate;
+use my127\Console\Factory\OptionValueFactory;
+use my127\Console\Usage\Exception\NoSuchOptionException;
 use my127\Console\Usage\Model\Argument;
 use my127\Console\Usage\Model\Command;
 use my127\Console\Usage\Model\OptionDefinition;
 use my127\Console\Usage\Model\OptionDefinitionCollection;
 use my127\Console\Usage\Model\Option;
+use my127\Console\Usage\Model\OptionValue;
 
 class Input implements ArrayAccess, Countable, IteratorAggregate
 {
@@ -20,12 +24,22 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
     private $args      = [];
 
     /**
-     * @param mixed[]                     $args
-     * @param OptionDefinitionCollection  $optionRepository
+     * @var OptionValueFactory
      */
-    public function __construct($args, OptionDefinitionCollection $optionRepository)
-    {
+    private $optionValueFactory;
+
+    /**
+     * @param mixed[] $args
+     * @param OptionDefinitionCollection $optionRepository
+     * @param OptionValueFactory $optionValueFactory
+     */
+    public function __construct(
+        $args,
+        OptionDefinitionCollection $optionRepository,
+        OptionValueFactory $optionValueFactory
+    ) {
         $this->args = $args;
+        $this->optionValueFactory = $optionValueFactory;
 
         $this->processArgs($optionRepository);
     }
@@ -60,10 +74,10 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
         return $this->getOption($option);
     }
 
-    public function getOption($option)
+    public function getOption($option): OptionValue
     {
         if (!isset($this->options[$option])) {
-            return null;
+            throw NoSuchOptionException::createFromOptionName($option);
         }
 
         $values = $this->options[$option];
@@ -123,26 +137,40 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
      */
     public function __toString()
     {
-        return implode("\n", array_map(function ($arg) {
-            return (string) $arg;
-
-        }, $this->args));
+        return implode(
+            "\n",
+            array_map(
+                function ($arg) {
+                    return (string) $arg;
+                },
+                $this->args
+            )
+        );
     }
 
     public function toJSON()
     {
         $data =
         [
-            'argv'      => array_map(function ($arg) {
-                return (string) $arg;
-            }, $this->args),
+            'argv'      => array_map(
+                function ($arg) {
+                    return (string) $arg;
+                },
+                $this->args
+            ),
             'command'   => $this->command,
-            'arguments' => array_map(function ($values) {
-                return count($values) == 1 ? $values[0] : $values;
-            }, $this->arguments),
-            'options'   => array_map(function ($values) {
-                return count($values) == 1 ? $values[0] : $values;
-            }, $this->options)
+            'arguments' => array_map(
+                function ($values) {
+                    return count($values) == 1 ? $values[0] : $values;
+                },
+                $this->arguments
+            ),
+            'options'   => array_map(
+                function ($values) {
+                    return count($values) == 1 ? $values[0] : $values;
+                },
+                $this->options
+            )
         ];
 
         return json_encode($data, JSON_PRETTY_PRINT);
@@ -150,7 +178,9 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
 
     private function processArgs(OptionDefinitionCollection $optionRepository)
     {
-        /** @var OptionDefinition $optionDefinition */
+        /**
+         * @var OptionDefinition $optionDefinition
+         */
         foreach ($optionRepository as $optionDefinition) {
             $this->options[$optionDefinition->getLongName() ?: $optionDefinition->getShortName()] = null;
         }
@@ -166,7 +196,7 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
                     break;
 
                 case ($arg instanceof Option):
-                    $this->options[$this->getOptionName($arg)][] = $arg->getValue();
+                    $this->options[$this->getOptionName($arg)][] = $this->createOptionValue($arg);
                     break;
             }
         }
@@ -183,5 +213,14 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
         $definition = $option->getDefinition();
 
         return $definition->getLongName()?:$definition->getShortName();
+    }
+
+    private function createOptionValue(Option $arg): OptionValue
+    {
+        if (null === $value = $arg->getValue()) {
+            return $arg->getDefinition()->getDefault();
+        }
+
+        return $this->optionValueFactory->createFromTypeAndValue($arg->getDefinition()->getType(), $value);
     }
 }

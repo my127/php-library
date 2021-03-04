@@ -72,8 +72,8 @@ class DefaultTransition implements Transition
     /**
      * Accept Visitor
      *
-     * @param StateVisitor  $visitor
-     * @param State[]       $visited
+     * @param StateVisitor $visitor
+     * @param State[]      $visited
      *
      * @return void
      */

@@ -2,10 +2,21 @@
 
 namespace my127\Console\Usage\Parser;
 
+use my127\Console\Factory\OptionValueFactory;
 use my127\Console\Usage\Model\OptionDefinition;
 
 class OptionDefinitionParser
 {
+    /**
+     * @var OptionValueFactory
+     */
+    private $optionValueFactory;
+
+    public function __construct(OptionValueFactory $optionValueFactory)
+    {
+        $this->optionValueFactory = $optionValueFactory;
+    }
+
     public function parse($option): OptionDefinition
     {
         $shortName   = null;
@@ -20,28 +31,28 @@ class OptionDefinitionParser
 
         modeSelect:
         {
-            while ($i < $length) {
-                switch ($option[$i]) {
-                    case ' ':
-                    case ',':
-                        ++$i;
-                        break;
+        while ($i < $length) {
+            switch ($option[$i]) {
+                case ' ':
+                case ',':
+                    ++$i;
+                    break;
 
-                    case '-':
-                        if ($option[$i + 1] == '-') {
-                            $i += 2;
-                            goto parseLongName;
-                        }
+                case '-':
+                    if ($option[$i + 1] == '-') {
+                        $i += 2;
+                        goto parseLongName;
+                    }
 
-                        ++$i;
-                        goto parseShortName;
+                    ++$i;
+                    goto parseShortName;
 
-                        break;
+                    break;
 
-                    default:
-                        goto parseDescription;
-                }
+                default:
+                    goto parseDescription;
             }
+        }
 
             goto buildOptionDefinition;
         }
@@ -51,39 +62,39 @@ class OptionDefinitionParser
             $shortName = $option[$i];
             ++$i;
 
-            if ($i == $length) {
-                goto buildOptionDefinition;
-            }
+        if ($i == $length) {
+            goto buildOptionDefinition;
+        }
 
             goto hasArgument;
         }
 
         parseLongName:
         {
-            while ($i < $length && (($t = $option[$i]) != ' ' && $t != ',' && $t != '=' )) {
-                $longName .= $option[$i++];
-            }
+        while ($i < $length && (($t = $option[$i]) != ' ' && $t != ',' && $t != '=' )) {
+            $longName .= $option[$i++];
+        }
 
-            if ($i == $length) {
-                goto buildOptionDefinition;
-            }
+        if ($i == $length) {
+            goto buildOptionDefinition;
+        }
 
             goto hasArgument;
         }
 
         hasArgument:
         {
-            if ($option[$i] == '=') {
-                if ($option[$i + 1] == '<') {
-                    ++$i;
-                }
-
-                goto parseArgument;
+        if ($option[$i] == '=') {
+            if ($option[$i + 1] == '<') {
+                ++$i;
             }
 
-            if ((($k = $i + 1) < $length) && ( (($t = $option[$k]) >= 'A') && ($t <= 'Z') )) {
-                goto parseArgument;
-            }
+            goto parseArgument;
+        }
+
+        if ((($k = $i + 1) < $length) && ( (($t = $option[$k]) >= 'A') && ($t <= 'Z') )) {
+            goto parseArgument;
+        }
 
             goto modeSelect;
         }
@@ -94,9 +105,9 @@ class OptionDefinitionParser
 
             $argument = '';
 
-            while ($i < $length && ($option[$i] != '>' && $option[$i] != ',' && $option[$i] != ' ')) {
-                $argument .= $option[$i++];
-            }
+        while ($i < $length && ($option[$i] != '>' && $option[$i] != ',' && $option[$i] != ' ')) {
+            $argument .= $option[$i++];
+        }
 
             ++$i;
 
@@ -107,13 +118,13 @@ class OptionDefinitionParser
 
         parseDescription:
         {
-            while ($i < $length) {
-                $description .= $t = $option[$i++];
+        while ($i < $length) {
+            $description .= $t = $option[$i++];
 
-                if ($t == '[') {
-                    goto hasDefault;
-                }
+            if ($t == '[') {
+                goto hasDefault;
             }
+        }
 
             goto buildOptionDefinition;
         }
@@ -122,19 +133,19 @@ class OptionDefinitionParser
         {
             $hasDefault = '';
 
-            while ($i < $length) {
-                $hasDefault .= $t = $option[$i++];
+        while ($i < $length) {
+            $hasDefault .= $t = $option[$i++];
 
-                if ($t == ':') {
-                    $description .= $hasDefault;
+            if ($t == ':') {
+                $description .= $hasDefault;
 
-                    if ($hasDefault == 'default:') {
-                        goto parseDefaultValue;
-                    }
-
-                    goto parseDescription;
+                if ($hasDefault == 'default:') {
+                    goto parseDefaultValue;
                 }
+
+                goto parseDescription;
             }
+        }
 
             goto buildOptionDefinition;
         }
@@ -145,27 +156,27 @@ class OptionDefinitionParser
             $i += 1;
             $default = '';
 
-            while ($i < $length) {
-                $t = $option[$i++];
+        while ($i < $length) {
+            $t = $option[$i++];
 
-                if ($t != ']') {
-                    $default .= $t;
-                } else {
-                    $description .= $default . ']';
-                    goto parseDescription;
-                }
+            if ($t != ']') {
+                $default .= $t;
+            } else {
+                $description .= $default . ']';
+                goto parseDescription;
             }
+        }
 
             goto buildOptionDefinition;
         }
 
         buildOptionDefinition:
         {
-            if ($type == OptionDefinition::TYPE_BOOL && $default === null) {
-                $default = false;
-            }
+            $defaultValue = null === $default
+                ? $this->optionValueFactory->createFromType($type)
+                : $this->optionValueFactory->createFromTypeAndValue($type, $default);
 
-            return new OptionDefinition($shortName, $longName, $description, $type, $default, $argument);
+            return new OptionDefinition($defaultValue, $type, $shortName, $longName, $description, $argument);
         }
     }
 }

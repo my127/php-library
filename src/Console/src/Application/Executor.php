@@ -7,6 +7,7 @@ use my127\Console\Application\Event\BeforeActionEvent;
 use my127\Console\Application\Event\InvalidUsageEvent;
 use my127\Console\Application\Section\Section;
 use my127\Console\Application\Section\SectionVisitor;
+use my127\Console\Factory\OptionValueFactory;
 use my127\Console\Usage\Input;
 use my127\Console\Usage\Model\Argument;
 use my127\Console\Usage\Model\Command;
@@ -20,36 +21,63 @@ class Executor implements SectionVisitor
     public const EVENT_INVALID_USAGE = 'my127.console.application.invalid_usage';
     public const EVENT_BEFORE_ACTION = 'my127.console.application.before_action';
 
-    /** @var EventDispatcher  */
+    /**
+     * @var EventDispatcher
+     */
     private $dispatcher = null;
 
-    /** @var OptionDefinitionParser */
+    /**
+     * @var OptionDefinitionParser
+     */
     private $optionParser = null;
 
-    /** @var UsageParserBuilder  */
+    /**
+     * @var UsageParserBuilder
+     */
     private $usageParserBuilder = null;
 
-    /** @var Section */
+    /**
+     * @var Section
+     */
     private $root = null;
 
-    /** @var string[] */
+    /**
+     * @var string[]
+     */
     private $argv = [];
 
-    /** @var Section */
+    /**
+     * @var Section
+     */
     private $matchedSection = null;
 
-    /** @var Input */
+    /**
+     * @var Input
+     */
     private $matchedInput = null;
 
-    /** @var ActionCollection */
+    /**
+     * @var ActionCollection
+     */
     private $actions;
 
-    public function __construct(EventDispatcher $dispatcher, UsageParserBuilder $usageParserBuilder, OptionDefinitionParser $optionParser, ActionCollection $actions)
-    {
+    /**
+     * @var OptionValueFactory
+     */
+    private $optionValueFactory;
+
+    public function __construct(
+        EventDispatcher $dispatcher,
+        UsageParserBuilder $usageParserBuilder,
+        OptionDefinitionParser $optionParser,
+        ActionCollection $actions,
+        OptionValueFactory $optionValueFactory
+    ) {
         $this->dispatcher         = $dispatcher;
         $this->optionParser       = $optionParser;
         $this->usageParserBuilder = $usageParserBuilder;
         $this->actions            = $actions;
+        $this->optionValueFactory = $optionValueFactory;
     }
 
     public function getActionCollection(): ActionCollection
@@ -93,9 +121,7 @@ class Executor implements SectionVisitor
         }
 
         foreach ($usageDefinitions as $usageDefinition) {
-
             if ($usageDefinition[-1] == '%') {
-
                 $compare = explode(' ', substr($usageDefinition, 0, -2));
                 $against = array_slice($this->argv, 0, count($compare));
 
@@ -112,13 +138,11 @@ class Executor implements SectionVisitor
 
                 $args[] = new Argument('%', implode(' ', array_slice($this->argv, count($compare))));
 
-                $this->matchedInput   = new Input($args, $options);
+                $this->matchedInput   = new Input($args, $options, $this->optionValueFactory);
                 $this->matchedSection = $section;
 
                 return false;
-
             } else {
-
                 $parser = $this->usageParserBuilder->createUsageParser($usageDefinition, $options);
 
                 if (($input = $parser->parse($this->argv)) !== false) {
@@ -145,20 +169,26 @@ class Executor implements SectionVisitor
 
     private function invalidUsage($argv): InvalidUsageEvent
     {
-        $this->dispatcher->dispatch(self::EVENT_INVALID_USAGE, $event = new InvalidUsageEvent(
-            $argv,
-            $this->buildOptionCollection($this->root->getOptions())
-        ));
+        $this->dispatcher->dispatch(
+            self::EVENT_INVALID_USAGE,
+            $event = new InvalidUsageEvent(
+                $argv,
+                $this->buildOptionCollection($this->root->getOptions())
+            )
+        );
 
         return $event;
     }
 
     private function beforeAction(): BeforeActionEvent
     {
-        $this->dispatcher->dispatch(self::EVENT_BEFORE_ACTION, $event = new BeforeActionEvent(
-            $this->matchedInput,
-            $this->matchedSection
-        ));
+        $this->dispatcher->dispatch(
+            self::EVENT_BEFORE_ACTION,
+            $event = new BeforeActionEvent(
+                $this->matchedInput,
+                $this->matchedSection
+            )
+        );
 
         return $event;
     }

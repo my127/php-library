@@ -71,8 +71,8 @@ class StateTransitionBuilder
     /**
      * When
      *
-     * @param string    $label
-     * @param callable  $guard
+     * @param string   $label
+     * @param callable $guard
      *
      * @return $this
      */
