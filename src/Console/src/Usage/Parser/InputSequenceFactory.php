@@ -8,8 +8,11 @@ use my127\Console\Usage\Model\Option;
 
 class InputSequenceFactory
 {
-    public function createFrom($symbols, OptionDefinitionCollection $definitionRepository)
-    {
+    public function createFrom(
+        $symbols,
+        OptionDefinitionCollection $definitionRepository,
+        ?bool $ignoreMissingOption = false
+    ) : ?InputSequence {
         $options    = [];
         $positional = [];
 
@@ -52,7 +55,10 @@ class InputSequenceFactory
                 $definition = $definitionRepository->find($name);
 
                 if (!$definition) {
-                    continue;
+                    if ($ignoreMissingOption) {
+                        continue;
+                    }
+                    return null;
                 }
 
                 switch ($definition->getType()) {
@@ -79,7 +85,10 @@ class InputSequenceFactory
                 $definition   = $definitionRepository->find($name);
 
                 if (!$definition) {
-                    continue;
+                    if ($ignoreMissingOption) {
+                        continue;
+                    }
+                    return null;
                 }
 
                 switch ($definition->getType()) {

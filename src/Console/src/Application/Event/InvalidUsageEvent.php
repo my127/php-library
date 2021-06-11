@@ -13,7 +13,7 @@ class InvalidUsageEvent extends Event
 
     public function __construct($args, OptionDefinitionCollection $options)
     {
-        $this->input = (new InputSequenceFactory())->createFrom($args, $options);
+        $this->input = (new InputSequenceFactory())->createFrom($args, $options, true);
     }
 
     public function getInputSequence(): InputSequence

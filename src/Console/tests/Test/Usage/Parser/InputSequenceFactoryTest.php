@@ -79,6 +79,24 @@ class InputSequenceFactoryTest extends TestCase
     public function invalid_short_option()
     {
         $result = $this->inputSequenceFactory->createFrom(['-i=test'], $this->optionDefinitionCollection);
+        $this->assertNull($result);
+    }
+
+    /**
+     * @test
+     */
+    public function invalid_long_option()
+    {
+        $result = $this->inputSequenceFactory->createFrom(['--invalid=test'], $this->optionDefinitionCollection);
+        $this->assertNull($result);
+    }
+
+    /**
+     * @test
+     */
+    public function invalid_short_option_for_help()
+    {
+        $result = $this->inputSequenceFactory->createFrom(['-i=test'], $this->optionDefinitionCollection, true);
 
         $this->assertInstanceOf(InputSequence::class, $result);
         $this->assertCount(0, $result);
@@ -87,9 +105,9 @@ class InputSequenceFactoryTest extends TestCase
     /**
      * @test
      */
-    public function invalid_long_option()
+    public function invalid_long_option_for_help()
     {
-        $result = $this->inputSequenceFactory->createFrom(['-i=test'], $this->optionDefinitionCollection);
+        $result = $this->inputSequenceFactory->createFrom(['--invalid=test'], $this->optionDefinitionCollection, true);
 
         $this->assertInstanceOf(InputSequence::class, $result);
         $this->assertCount(0, $result);
