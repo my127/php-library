@@ -56,7 +56,11 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
 
     public function argument($argument)
     {
-        return $this->getArgument($argument);
+        $argument = $this->getArgument($argument);
+        if ($argument instanceof OptionValue) {
+            return $argument->value();
+        }
+        return $argument;
     }
 
     public function getArgument($argument)
@@ -71,7 +75,11 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
 
     public function option($option)
     {
-        return $this->getOption($option);
+        $option = $this->getOption($option);
+        if ($option instanceof OptionValue) {
+            return $option->value();
+        }
+        return $option;
     }
 
     public function getOption($option): OptionValue
