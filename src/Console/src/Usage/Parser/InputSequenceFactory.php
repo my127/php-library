@@ -52,7 +52,7 @@ class InputSequenceFactory
                 $definition = $definitionRepository->find($name);
 
                 if (!$definition) {
-                    return null;
+                    continue;
                 }
 
                 switch ($definition->getType()) {
@@ -79,7 +79,7 @@ class InputSequenceFactory
                 $definition   = $definitionRepository->find($name);
 
                 if (!$definition) {
-                    return null;
+                    continue;
                 }
 
                 switch ($definition->getType()) {
