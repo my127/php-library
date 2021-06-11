@@ -31,7 +31,7 @@ class InputSequenceFactoryTest extends TestCase
         $this->inputSequenceFactory = new InputSequenceFactory();
         $this->optionDefinitionCollection = new OptionDefinitionCollection();
         $this->option = new OptionDefinition(
-            OptionValueFactory::createFromTypeAndValue(OptionDefinition::TYPE_VALUE, 'default'),
+            (new OptionValueFactory())->createFromTypeAndValue(OptionDefinition::TYPE_VALUE, 'default'),
             OptionDefinition::TYPE_VALUE,
             'z',
             'zexample'
