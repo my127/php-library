@@ -21,7 +21,7 @@ class StringOptionValue implements OptionValue
 
     public function equals(OptionValue $value): bool
     {
-        return $value == $this->value;
+        return $value->value() == $this->value;
     }
 
     public function value(): string
