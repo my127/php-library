@@ -85,7 +85,7 @@ class Executor implements SectionVisitor
         return $this->actions;
     }
 
-    public function run(Section $section, $argv = []): void
+    public function run(Section $section, $argv = []): int
     {
         $this->argv = $argv;
 
@@ -94,18 +94,18 @@ class Executor implements SectionVisitor
 
         if ($this->matchedSection === null || $this->matchedInput === null) {
             $this->invalidUsage($argv);
-            return;
+            return 1;
         }
 
         if ($this->beforeAction()->isActionPrevented()) {
-            return;
+            return 0;
         }
 
         if (($action = $this->matchedSection->getAction()) === null) {
-            return;
+            return 0;
         }
 
-        $this->invokeAction($action);
+        return $this->invokeAction($action);
     }
 
     public function visit(Section $section): bool
@@ -193,12 +193,12 @@ class Executor implements SectionVisitor
         return $event;
     }
 
-    private function invokeAction($action)
+    private function invokeAction($action): int
     {
         if (!is_callable($action)) {
             $action = $this->actions->get($action);
         }
 
-        $action($this->matchedInput);
+        return $action($this->matchedInput) ?? 0;
     }
 }

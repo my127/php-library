@@ -19,7 +19,7 @@ class UsageParserTest extends TestCase
     {
         $result = usage('<environment>', 'development');
 
-        $this->assertIsArray($result);
+        self::assertIsArray($result);
         $this->assertTrue(count($result) == 1);
     }
 
