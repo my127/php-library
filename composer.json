@@ -11,7 +11,7 @@
     ],
     "require": {
         "php": ">=8.0",
-        "symfony/event-dispatcher": "^4.0"
+        "symfony/event-dispatcher": "^6.1"
 
     },
     "replace": {

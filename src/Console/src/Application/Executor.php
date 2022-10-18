@@ -170,11 +170,11 @@ class Executor implements SectionVisitor
     private function invalidUsage($argv): InvalidUsageEvent
     {
         $this->dispatcher->dispatch(
-            self::EVENT_INVALID_USAGE,
             $event = new InvalidUsageEvent(
                 $argv,
                 $this->buildOptionCollection($this->root->getOptions())
-            )
+            ),
+            self::EVENT_INVALID_USAGE
         );
 
         return $event;
@@ -183,11 +183,11 @@ class Executor implements SectionVisitor
     private function beforeAction(): BeforeActionEvent
     {
         $this->dispatcher->dispatch(
-            self::EVENT_BEFORE_ACTION,
             $event = new BeforeActionEvent(
                 $this->matchedInput,
                 $this->matchedSection
-            )
+            ),
+            self::EVENT_BEFORE_ACTION
         );
 
         return $event;
