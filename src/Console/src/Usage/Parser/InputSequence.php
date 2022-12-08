@@ -53,7 +53,7 @@ class InputSequence implements Countable
         return isset($this->options[$definition->getLabel()]);
     }
 
-    public function count()
+    public function count(): int
     {
         return count($this->positional) + count($this->options);
     }

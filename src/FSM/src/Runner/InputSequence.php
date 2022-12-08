@@ -33,7 +33,7 @@ class InputSequence implements Countable
         return count($this->input);
     }
 
-    public function count()
+    public function count(): int
     {
         return count($this->input);
     }
