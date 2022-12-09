@@ -95,7 +95,7 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
     /**
      * @inheritDoc
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return $this->args[$offset];
     }
@@ -103,7 +103,7 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
     /**
      * @inheritDoc
      */
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         return $this->args[$offset];
     }
@@ -111,7 +111,7 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
     /**
      * @inheritDoc
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->args[$offset] = $value;
     }
@@ -119,7 +119,7 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
     /**
      * @inheritDoc
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->args[$offset]);
     }
@@ -127,7 +127,7 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
     /**
      * @inheritDoc
      */
-    public function count()
+    public function count(): int
     {
         return count($this->args);
     }
@@ -135,7 +135,7 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
     /**
      * @inheritDoc
      */
-    public function getIterator()
+    public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->args);
     }

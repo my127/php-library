@@ -29,7 +29,7 @@ class OptionDefinitionCollection implements IteratorAggregate, Countable
         return (isset($this->map[$optionName])) ? $this->map[$optionName] : null;
     }
 
-    public function getIterator()
+    public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->options);
     }
@@ -45,7 +45,7 @@ class OptionDefinitionCollection implements IteratorAggregate, Countable
         return $merged;
     }
 
-    public function count()
+    public function count(): int
     {
         return count($this->options);
     }
